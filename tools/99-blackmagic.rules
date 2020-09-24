@@ -1,0 +1,20 @@
+# Black Magic Probe
+# copy this to /etc/udev/rules.d/99-blackmagic.rules 
+# reload udev rules with "udevadm control --reload-rules"
+# add yourself to dialout group with "adduser $USER dialout"
+
+# bmp
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="Black Magic GDB Server", SYMLINK+="ttyBmpGdb"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="Black Magic UART Port", SYMLINK+="ttyBmpTarg"
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{interface}=="Micropython", SYMLINK+="ttyBmpPy"
+ATTR{idProduct}=="6017", ATTR{idVendor}=="1d50", ENV{ID_MM_DEVICE_IGNORE}="1"
+ATTR{idProduct}=="6018", ATTR{idVendor}=="1d50", ENV{ID_MM_DEVICE_IGNORE}="1"
+ATTR{idProduct}=="6017", ATTR{idVendor}=="1d50", ENV{MTP_NO_PROBE}="1"
+ATTR{idProduct}=="6018", ATTR{idVendor}=="1d50", ENV{MTP_NO_PROBE}="1"
+# dap
+KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6017", MODE="0664", GROUP:="dialout"
+KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6018", MODE="0664", GROUP:="dialout"
+# dfu
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="1d50", ATTR{idProduct}=="6017", MODE="0664", GROUP:="dialout"
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="1d50", ATTR{idProduct}=="6018", MODE="0664", GROUP:="dialout"
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="0483", ATTR{idProduct}=="df11", MODE="0664", GROUP:="dialout"

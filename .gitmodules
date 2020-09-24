@@ -1,0 +1,9 @@
+[submodule "extmod/free-dap"]
+	path = extmod/free-dap
+	url = http://github.com/koendv/free-dap
+[submodule "micropython"]
+	path = micropython
+	url = http://github.com/koendv/micropython
+[submodule "extmod/blackmagic"]
+	path = extmod/blackmagic
+	url = http://github.com/koendv/blackmagic

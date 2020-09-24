@@ -1,0 +1,13 @@
+diff --git a/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc.c b/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc.c
+index 5ffa1c2..25e806a 100644
+--- a/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc.c
++++ b/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_crc.c
+@@ -64,6 +64,8 @@
+   ******************************************************************************
+   */
+ 
++#pragma GCC diagnostic ignored "-Wstrict-aliasing"
++
+ /* Includes ------------------------------------------------------------------*/
+ #include "stm32f7xx_hal.h"
+ 

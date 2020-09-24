@@ -1,0 +1,70 @@
+#!/bin/bash -x
+
+# script to build micropython firmware.
+# needs arm-none-eabi-gcc for stm32, xtensa-esp32-elf-gcc for esp32.
+
+ZIP=/tmp/bmp.zip
+BMPDIR=~/src/bmp
+BRANCH=devel
+
+cd $BMPDIR
+git submodule update --init --recursive
+for i in micropython extmod/blackmagic extmod/free-dap
+do
+  cd ${BMPDIR}/${i}
+  git checkout $BRANCH
+done
+
+cd $BMPDIR/micropython/lib/stm32lib
+if [ ! -f BMP-PATCHED ]; then
+  patch -p1 < $BMPDIR/patch/stm32lib.patch
+  touch BMP-PATCHED
+fi
+
+cd $BMPDIR/micropython
+make -j4 -C mpy-cross
+make -C ports/stm32 submodules
+make -C ports/esp32 submodules
+
+cat > readme.txt <<EOD
+stm32:
+dfu-util -a 0 -d 0x0483:0xDF11 -D build-DEVEBOX_STM32H743/firmware.dfu
+
+esp32:
+esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z --flash_mode dio --flash_freq 40m 0x1000 build-ESP32_WROVER/firmware.bin
+
+EOD
+date >> readme.txt
+rm -f ${ZIP}
+zip ${ZIP} readme.txt
+
+for BRD in STLINK3MINI PYBD_SF2 DEVEBOX_STM32H743 DEVEBOX_STM32H750
+do
+  cd $BMPDIR/micropython/ports/stm32
+  rm -rf ../../extmod/blackmagic ../../extmod/free-dap
+  make USER_C_MODULES=../../../extmod BOARD=${BRD} clean
+  make -j4 USER_C_MODULES=../../../extmod BOARD=${BRD}
+  make -C mboot BOARD=${BRD} clean
+  make -j4 -C mboot BOARD=${BRD}
+  cd $BMPDIR/micropython/ports
+  zip -9 ${ZIP} ./stm32/build-${BRD}/firmware.dfu ./stm32/build-${BRD}/firmware.elf
+  zip -9 ${ZIP} ./stm32/mboot/build-${BRD}/firmware.dfu ./stm32/mboot/build-${BRD}/firmware.elf
+done
+
+for BRD in ESP32_WROVER
+do
+  cd $BMPDIR/micropython/ports/esp32
+  rm -rf ../../extmod/blackmagic ../../extmod/free-dap
+  make USER_C_MODULES=../../../extmod BOARD=${BRD} clean
+  make -j4 USER_C_MODULES=../../../extmod BOARD=${BRD}
+  cd $BMPDIR/micropython/ports
+  zip -9 ${ZIP} ./esp32/build-${BRD}/firmware.bin
+done
+
+cd $BMPDIR/micropython
+zipinfo ${ZIP} >> readme.txt
+zip ${ZIP} readme.txt
+
+zipinfo ${ZIP}
+
+# not truncated
