@@ -271,7 +271,7 @@ Once attached to a target, you can e.g. search target memory for a string:
             if region['memory_type'] == 'ram':
                 ram_begin=region['start']
                 ram_end=ram_begin+region['length']
-                for addr in range(ram_begin, ram_end-blocksize, blocksize//2):
+                for addr in range(ram_begin, ram_end-blocksize//2, blocksize//2):
                     target.mem_read(dta, addr)
                     idx=dta.find(s)
                     if idx != -1:
