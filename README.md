@@ -481,7 +481,7 @@ This is a measurement of firmware download speed. The same firmware image was do
 | DAP               | SWD clock | STM32F103C8T6 | CKS32F103C8T6 | Connection |
 | ----------------- | --------- | ------------- | ------------- | ---------- |
 | ST-Link v3 mini   | 14.4MHz   | 7KB/s         | 9KB/s         | HS USB     |
-| PYBD_SF2          | 14.4MHz   | 2KB/s          | 2KB/s          | FS USB     |
+| PYBD_SF2          | 14.4MHz   | 2KB/s         | 2KB/s         | FS USB     |
 | DEVEBOX STM32H743 | 9.0MHz    | 2KB/s         | 2KB/s         | FS USB     |
 | DEVEBOX STM32H750 | 9.0MHz    | 2KB/s         | 2KB/s         | FS USB     |
 
