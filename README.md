@@ -157,12 +157,14 @@ The default SWD clock frequency is 1MHz. This frequency can probably be increase
 
 With the default calibration values, SWD clock frequency ought to have an accuracy of better than 1%. 
 
-For increased accuracy, the SWD clock frequency can be calibrated. At the micropython command prompt, type *dap.calibrate()*
+If processor clock frequency is changed with `machine.freq()`, SWD clock has to be recalibrated before using DAP. Even with processor clock frequency unchanged, SWD clock frequency can also be recalibrated simply for increased accuracy. At the micropython command prompt, type *dap.calibrate()*
 
 Calibration takes 20 seconds. Calibration output is a tuple of two numbers, e.g.:
 
     >>> dap.calibrate()
     (35985, 8999685)
+
+The default values for this board are (36000, 9000000).
 
 Calibration data are lost when micropython reboots, but there is no need to re-run calibration every time micropython boots. 
 Once you know the calibration data of your board, you can simply set calibration values in `main.py`, e.g.:
@@ -408,7 +410,7 @@ The debugger has been compiled for various boards:
 | Board             | CPU            | clock  | flash             | ram                | sdcard | wifi | bluetooth | usb    | price  |
 | ----------------- | -------------- | ------ | ----------------- | ------------------ | ------ | ---- | --------- | ------ | ------ |
 | ST-Link v3 mini   | STM32F723IEK6  | 216MHz | 512KB             | 256KB              | N      | N    | N         | 480MHz | 10 EUR |
-| PYBD_SF2          | STM32F722IEK6  | 120MHz | 512KB+2MB QSPI    | 256KB              | Y      | Y    | Y         | 12 MHz | 48 EUR |
+| PYBD_SF2          | STM32F722IEK6  | 216MHz | 512KB+2MB QSPI    | 256KB              | Y      | Y    | Y         | 12 MHz | 48 EUR |
 | DEVEBOX STM32H743 | STM32H743VIT6  | 216MHz | 2MB+8MB QSPI      | 1M                 | Y      | N    | N         | 12MHz  | 16 EUR |
 | DEVEBOX STM32H750 | STM32H750VBT6  | 216MHz | 128KB+8MB QSPI \* | 1M                 | Y      | N    | N         | 12MHz  | 10 EUR |
 | TTGO              | ESP32-WROVER-B | 240MHz | 448KB+4MB         | 520KB+8MB PSRAM \* | Y      | Y    | Y         | N \*   | 7 EUR  |
@@ -428,7 +430,8 @@ Subjective opinion:
 
 ### PYBD_SF2
 
--   micropython reference board 
+-   micropython reference board
+-   default cpu clock is 120MHz; max. clock is 216 Mhz. 
 -   good quality
 -   not cheap
 -   need to buy additional breakout board for access to SWD pins if you want to connect a debugger to debug micropython
@@ -446,12 +449,13 @@ Subjective opinion:
 
 -   same as DEVEBOX_STM32H743
 -   Officially has only 128K internal flash, but in practice has 2M internal flash.
+-   connecting boot0 to 3V3 and flashing using dfu works fine. flashing using mboot sometimes hangs.
 -   [Porting notes](https://github.com/koendv/micropython/blob/devel/ports/stm32/boards/DEVEBOX_STM32H750/README.md)
 
 ### TTGO ESP32_WROVER
 
 -   xtensa architecture, not arm
--   wifi and bluetooth
+-   wifi and bluetooth built-in
 -   runs micropython on top of FreeRTOS
 -   8 Mbyte PSRAM on the board, but micropython is limited to 4 Mbyte.
 -   No native usb. The usb connection is a usb-serial converter, connected to processor uart0.
@@ -459,15 +463,37 @@ Subjective opinion:
 
 ## Test results
 
-This is a measurement of firmware download speed. The same firmware image was downloaded with Black Magic Probe from the boards in the first column to two *blue pills*, one with a genuine STM32F103 and one with a Chinese clone F103.
+This is a measurement of firmware download speed. The same firmware image was downloaded with Black Magic Probe and Free-DAP from the boards in the first column to two *blue pills*, one with a genuine STM32F103 and one with a Chinese CKS32F103C8T6.
 
-| bmp               | bmp cpu        | STM32F103C8T6 | CKS32F103C8T6 | Connection |
+## bmp
+
+| BMP               | BMP CPU        | STM32F103C8T6 | CKS32F103C8T6 | Connection |
 | ----------------- | -------------- | ------------- | ------------- | ---------- |
 | ST-Link v3 mini   | STM32F723IEK6  | 18KB/s        | 73KB/s        | HS USB     |
-| PYBD_SF2          | STM32F722IEK6  | 17KB/s        | 58KB/s        | FS USB     |
+| PYBD_SF2          | STM32F722IEK6  | 18KB/s        | 67KB/s        | FS USB     |
 | PYBD_SF2          | STM32F722IEK6  | 15KB/s        | 40KB/s        | Wifi       |
-| DEVEBOX STM32H7XX | STM32H743VIT6  | 18KB/s        | 66KB/s        | FS USB     |
-| DEVEBOX STM32H7XX | STM32H750VBT6  | 18KB/s        | 67KB/s        | FS USB     |
+| DEVEBOX STM32H743 | STM32H743VIT6  | 18KB/s        | 66KB/s        | FS USB     |
+| DEVEBOX STM32H750 | STM32H750VBT6  | 18KB/s        | 67KB/s        | FS USB     |
 | TTGO              | ESP32-WROVER-B | 11KB/s        | 18KB/s        | Wifi       |
+
+## dap
+
+| DAP               | SWD clock | STM32F103C8T6 | CKS32F103C8T6 | Connection |
+| ----------------- | --------- | ------------- | ------------- | ---------- |
+| ST-Link v3 mini   | 14.4MHz   | 7KB/s         | 9KB/s         | HS USB     |
+| PYBD_SF2          | 14.4MHz   | 2KB/s          | 2KB/s          | FS USB     |
+| DEVEBOX STM32H743 | 9.0MHz    | 2KB/s         | 2KB/s         | FS USB     |
+| DEVEBOX STM32H750 | 9.0MHz    | 2KB/s         | 2KB/s         | FS USB     |
+
+Note: 
+
+-   dap software not optimized for HS (packet size 64 bytes)
+-   Processor clock speed STM32 216MHz, ESP32 240MHz.
+    On PYBD_SF2:
+    
+        machine.freq(216000000)
+        dap.calibrate()
+        
+-    Test [firmware image](tools/SemihostingTest_stm32f103.elf)        
 
 *not truncated*
