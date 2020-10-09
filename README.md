@@ -196,7 +196,7 @@ If you attach an oscilloscope to the SWCLK pin  while dap.calibrate() is running
 
 The debugger supports semihosting. Semihosting print output is to the micropython console, and semihosting keyboard input  is from the micropython console. Semihosting file i/o is to the micropython file system. If you plan on writing large files, choose a debugger board with a micro-sd card.
 
-Semihosting calls run in the debugger probe itself. Some semihosting calls are implemented in micropython. Should you wish to customize these system calls, edit `extmod/blackmagic/modules/common/semihosting.py`.
+Semihosting calls run in the debugger probe itself. Some semihosting calls are implemented in micropython. Should you wish to customize these system calls, edit source file `semihosting.py`.
 
 Semihosting is initialized by putting `semihosting.init()` in `main.py`.
 
@@ -348,13 +348,13 @@ You can execute python commands from gdb:
     (gdb) monitor python uos.listdir('/')
     ['flash']
 
-Executing python commands from gdb requires that a callback function has been registered using `bmp.repl_fun()`. The callback function is used to execute the gdb `monitor python` commands. In `main.py`, insert:
+Executing python commands from gdb requires the following lines in `main.py`:
 
     def repl_callback(s):
       return str(eval(s))
     bmp.repl_fun(repl_callback)
 
-If no callback function has been registered, python commands can not be executed from gdb. Any modules used in the python commands need to have been imported previously, eg. in `main.py`.
+Any modules used in the python commands need to have been imported previously, eg. in `main.py`.
 
 ## Sources
 
@@ -388,20 +388,11 @@ My development environment is a Raspberry Pi 4, 8gb ram, Samsung Portable SSD T5
 
 Sometimes micropython hits an error, resets and reboots. It happens.
 
-The reset handler has been patched to analyze this kind of errors. In `stm32_it.c`:
-
-    void HardFault_Handler(void) {
-        #if MICROPY_HW_BKPT_IF_RESET
-        /* soft breakpoint for hard fault */
-        if (pyb_hard_fault_debug)
-            __asm volatile ("bkpt");
-        #endif
-
 Connect a debugger to the debugger. At the micropython prompt of the debugger that reboots, type:
 
     >>> pyb.fault_debug(1)
 
-and next time the error occurs, instead of a reboot you will get a breakpoint. 
+and next time the error occurs, instead of a reboot you will get a breakpoint. See patch to *HardFault_Handler* in `stm32_it.c`.
 
 ## Boards
 
@@ -447,8 +438,8 @@ Subjective opinion:
 
 ### DEVEBOX_STM32H750
 
--   same as DEVEBOX_STM32H743
--   Officially has only 128K internal flash, but in practice has 2M internal flash.
+-   same board as DEVEBOX_STM32H743, different processor
+-   Officially has only 128K internal flash,  in practice has 2M internal flash.
 -   connecting boot0 to 3V3 and flashing using dfu works fine. flashing using mboot sometimes hangs.
 -   [Porting notes](https://github.com/koendv/micropython/blob/devel/ports/stm32/boards/DEVEBOX_STM32H750/README.md)
 
@@ -478,6 +469,8 @@ This is a measurement of firmware download speed. The same firmware image was do
 
 ## dap
 
+Tested with [openocd](http://openocd.org/).
+
 | DAP               | SWD clock | STM32F103C8T6 | CKS32F103C8T6 | Connection |
 | ----------------- | --------- | ------------- | ------------- | ---------- |
 | ST-Link v3 mini   | 14.4MHz   | 7KB/s         | 9KB/s         | HS USB     |
@@ -494,6 +487,6 @@ Note:
         machine.freq(216000000)
         dap.calibrate()
         
--    Test [firmware image](tools/SemihostingTest_stm32f103.elf)        
+-    Test [firmware image](tools/SemihostingTest_stm32f103.elf) used
 
 *not truncated*
