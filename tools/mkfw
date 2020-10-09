@@ -9,7 +9,7 @@ BRANCH=devel
 #BRANCH=release_1.0
 
 cd $BMPDIR
-git submodule update --init --depth 1
+git submodule update --init --recursive
 for i in micropython extmod/blackmagic extmod/free-dap
 do
   cd ${BMPDIR}/${i}
