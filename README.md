@@ -280,7 +280,7 @@ Once attached to a target, you can e.g. search target memory for a string:
                         return addr+idx
         return
         
-    memsrch('hello, world!')    
+    memsrch('hello, world!')
 
 To see a list of all available functions, type `target.help()`.
 
@@ -314,6 +314,8 @@ Maximum file size is determined by available ram.
 On stm32, `machine.factory_reset()` reformats flash and installs new boot.py and main.py files.
 
 On esp32, `inisetup.fresh_files()` installs new boot.py and main.py files.
+
+The new `boot.py` and `main.py` files come with commands for bmp, dap, and wifi already in place.
 
 ### Pin names
 

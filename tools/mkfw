@@ -6,9 +6,10 @@
 ZIP=/tmp/bmp.zip
 BMPDIR=~/src/bmp
 BRANCH=devel
+#BRANCH=release_1.0
 
 cd $BMPDIR
-git submodule update --init --recursive
+git submodule update --init --depth 1
 for i in micropython extmod/blackmagic extmod/free-dap
 do
   cd ${BMPDIR}/${i}
@@ -38,7 +39,7 @@ date >> readme.txt
 rm -f ${ZIP}
 zip ${ZIP} readme.txt
 
-for BRD in STLINK3MINI PYBD_SF2 DEVEBOX_STM32H743 DEVEBOX_STM32H750
+for BRD in STLINK3MINI PYBD_SF2 PYBD_SF3 PYBD_SF6 DEVEBOX_STM32H743 DEVEBOX_STM32H750
 do
   cd $BMPDIR/micropython/ports/stm32
   rm -rf ../../extmod/blackmagic ../../extmod/free-dap
