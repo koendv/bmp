@@ -240,7 +240,6 @@ By default, the output of `traceswo` and `tracebuf` is sent to the micropython c
 
     def displ_callback(s):
       lcd.write(s)
-
     bmp.disp_fun(displ_callback)
 
 With micropython scripts, the debugger becomes a standalone tool that takes action without the need for a host system. For instance, combining `traceswo` and `disp_fun`, or `tracebuf` and `disp_fun`, you can script the debugger to log `traceswo` or `tracebuf` output to sdcard and reset the target if a certain string occurs. 
@@ -273,7 +272,7 @@ Once attached to a target, you can e.g. search target memory for a string:
             if region['memory_type'] == 'ram':
                 ram_begin=region['start']
                 ram_end=ram_begin+region['length']
-                for addr in range(ram_begin, ram_end-blocksize//2, blocksize//2):
+                for addr in range(ram_begin, ram_end-blocksize, blocksize//2):
                     target.mem_read(dta, addr)
                     idx=dta.find(s)
                     if idx != -1:
@@ -315,7 +314,7 @@ On stm32, `machine.factory_reset()` reformats flash and installs new boot.py and
 
 On esp32, `inisetup.fresh_files()` installs new boot.py and main.py files.
 
-The new `boot.py` and `main.py` files come with commands for bmp, dap, and wifi already in place.
+The new `boot.py` and `main.py` files come with all the necessary commands for bmp, dap, and wifi already in place.
 
 ### Pin names
 
@@ -480,11 +479,12 @@ Tested with [openocd](http://openocd.org/).
 | DEVEBOX STM32H743 | 9.0MHz    | 2KB/s         | 2KB/s         | FS USB     |
 | DEVEBOX STM32H750 | 9.0MHz    | 2KB/s         | 2KB/s         | FS USB     |
 
-Note: 
+Test notes:
 
+-   dap tested using openocd
 -   dap software not optimized for HS (packet size 64 bytes)
 -   Processor clock speed STM32 216MHz, ESP32 240MHz.
-    On PYBD_SF2:
+    E.g. on PYBD_SF2:
     
         machine.freq(216000000)
         dap.calibrate()

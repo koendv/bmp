@@ -9,12 +9,16 @@ BRANCH=devel
 #BRANCH=release_1.0
 
 cd $BMPDIR
-git submodule update --init --recursive
+git submodule update --init --depth 1
 for i in micropython extmod/blackmagic extmod/free-dap
 do
   cd ${BMPDIR}/${i}
   git checkout $BRANCH
 done
+
+cd $BMPDIR/micropython
+make -C ports/stm32 submodules
+make -C ports/esp32 submodules
 
 cd $BMPDIR/micropython/lib/stm32lib
 if [ ! -f BMP-PATCHED ]; then
@@ -24,8 +28,6 @@ fi
 
 cd $BMPDIR/micropython
 make -j4 -C mpy-cross
-make -C ports/stm32 submodules
-make -C ports/esp32 submodules
 
 cat > readme.txt <<EOD
 stm32:
