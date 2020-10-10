@@ -94,7 +94,7 @@ and on the host:
 
     (gdb) target extended-remote /dev/ttyS0
 
-if the debugger is connecte to host serial port ttyS0.
+if the debugger is connected to host serial port ttyS0.
 
 ### tcp
 
