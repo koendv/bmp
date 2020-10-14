@@ -289,11 +289,13 @@ I usually first write a quick micropython script using module `target`. Later, w
 
 ### DAP in micropython scripts
 
-`dap.process(request, response)` executes DAP requests from micropython.
+Execute DAP requests from micropython:
 
-- *request* and *response* are 64-byte string, bytes or bytearray objects
-- `dap.process` returns *True* if *response* contains a DAP response packet that needs to be sent
-- `dap.process` returns *False* if *response* does not need to be sent (e.g. if request was a DAP 'transfer abort', which does not generate a response.)
+    dap.process(request, response) 
+
+- *request* and *response* are 64-byte string, *bytes* or *bytearray* micropython objects
+- `dap.process` returns *True* if *response* contains a DAP response packet
+- `dap.process` returns *False* if *response* does not contain a DAP response packet (e.g. if request was a DAP 'transfer abort', which does not generate a response.)
 
 ```
 >>> bmp.deinit()
@@ -306,7 +308,7 @@ True
 b'\x00\x1aGeneric CMSIS-DAP Adapter'
 ```
 
-Use `dap.process()` to port pc-based pyOCD scripts to the probe itself.
+Use `dap.process()` to port pyOCD scripts from PC to the probe itself.
 
 ### Pins
 
