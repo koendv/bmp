@@ -287,6 +287,24 @@ To see a list of all available functions, type `target.help()`.
 
 I usually first write a quick micropython script using module `target`. Later, when I'm pleased with the result, I consider writing it in C, as a micropython extension.
 
+### DAP from micropython
+
+`dap.process(request, response)` executes DAP requests from micropython.
+
+- *request* and *response* are 64-byte string, bytes or bytearray objects
+- `dap.process` returns *True* if *response* contains a DAP response packet that needs to be sent
+- `dap.process` returns *False* if *response* does not need to be sent (e.g. if request was a DAP 'transfer abort', which does not generate a response.)
+
+```
+>>> req=bytearray(64)
+>>> req[1]=2
+>>> resp=bytearray(64)
+>>> dap.process(req, resp)
+True
+>>> resp.rstrip(b'\x00')
+b'\x00\x1aGeneric CMSIS-DAP Adapter'
+```
+
 ## Pins
 
 SWD and JTAG pins can be accessed from micropython. E.g. pulling down the reset pin:
