@@ -287,7 +287,7 @@ To see a list of all available functions, type `target.help()`.
 
 I usually first write a quick micropython script using module `target`. Later, when I'm pleased with the result, I consider writing it in C, as a micropython extension.
 
-### DAP from micropython
+### DAP in micropython scripts
 
 `dap.process(request, response)` executes DAP requests from micropython.
 
@@ -296,6 +296,7 @@ I usually first write a quick micropython script using module `target`. Later, w
 - `dap.process` returns *False* if *response* does not need to be sent (e.g. if request was a DAP 'transfer abort', which does not generate a response.)
 
 ```
+>>> bmp.deinit()
 >>> req=bytearray(64)
 >>> req[1]=2
 >>> resp=bytearray(64)
@@ -305,9 +306,11 @@ True
 b'\x00\x1aGeneric CMSIS-DAP Adapter'
 ```
 
-## Pins
+Use `dap.process()` to port pc-based pyOCD scripts to the probe itself.
 
-SWD and JTAG pins can be accessed from micropython. E.g. pulling down the reset pin:
+### Pins
+
+If needed, `machine.Pin` allows bit-banging SWD and JTAG pins from micropython, for low-level access. E.g. pulling down the reset pin:
 
     >>> rst=machine.Pin(machine.Pin.board.BMP_SRST, machine.Pin.OUT)
     >>> rst.value(0)
@@ -315,6 +318,26 @@ SWD and JTAG pins can be accessed from micropython. E.g. pulling down the reset 
     >>> rst=machine.Pin(machine.Pin.board.BMP_SRST, machine.Pin.IN)
 
 SWDIO and SWCLK can be accessed the same way.
+
+### Summary
+
+There are three modules that can be used to debug a target: `bmp`, `target` and `dap`.
+
+- The `bmp` micropython module implements a gdb server on a usb vcp, a serial port, or a tcp socket. After `bmp.init()`, you can connect to the probe using gdb.
+
+- The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives access to the primitives `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
+
+    The modules `bmp` and `target` can be used at the same time. 
+
+- The `dap` micropython module implements a CMSIS-DAP probe on a usb hid port. After `dap.init()`, you can connect to the probe using openocd or pyOCD.
+
+- `dap.process()` is a micropython function that executes a single dap request. `dap.process()` can be used after a `dap.init()`, or standalone, without previous `dap.init()`. With `dap.process()` you can port pyOCD scripts from PC to probe.
+
+Avoid dap and bmp accessing the SWD pins at the same time.
+
+If you have issued a `bmp.init()`, do a `bmp.deinit()` before using module `dap`.
+
+If you have issued a `dap.init()`, do a `dap.deinit()` before using modules `bmp` or `target`. 
 
 ## Utilities
 
