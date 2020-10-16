@@ -12,15 +12,15 @@ This is firmware and sources for a debugger probe that targets arm processors. T
 
 ## Intro
 
-There are three micropython modules that can be used to debug a target: `bmp`, `target` and `dap`.
+There are three micropython modules that can be used to debug: `bmp`, `target` and `dap`.
 
 - The Black Magic Probe `bmp` micropython module implements a gdb server on a usb vcp, a serial port, or a tcp socket. After `bmp.init()`, you can connect to the probe using gdb.
 
-- The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives access to the primitives `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
+- The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives micropython scripts access to the primitives `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
 
-- The `dap` micropython module implements a CMSIS-DAP probe on a usb hid port. After `dap.init()`, you can connect to the probe using openocd or pyOCD.
+- The `dap` micropython module implements a CMSIS-DAP probe on a usb hid port. After `dap.init()`, you can connect to the probe using [openocd](http://openocd.org/) or [pyocd](https://github.com/pyocd/pyOCD).
 
-- `dap.process()` is a micropython function that executes a single dap request. `dap.process()` can be used after `dap.init()`, or standalone, without previous `dap.init()`. With `dap.process()` you can port pyOCD scripts from PC to probe.
+- `dap.process()` is a micropython function that executes a single dap request. `dap.process()` can be used after `dap.init()`, or standalone, without previous `dap.init()`. With `dap.process()` you can port [pyocd](https://github.com/pyocd/pyOCD) scripts from PC to probe.
 
 The modules `bmp` and `target` can be used at the same time. The modules `dap` and `bmp` should not be active at the same time. 
 
@@ -29,7 +29,7 @@ This section explains how to use the gdb server, the CMSIS-DAP probe, and the mi
 
 ## Black Magic Probe
 
-Black Magic Probe implements a gdb server. 
+[Black Magic Probe](https://github.com/blacksphere/blackmagic) implements a gdb server. 
 The connection with the gdb server can be over usb, serial port, or network interface.
 
 ### usb
@@ -105,7 +105,7 @@ In general, micropython stream devices - usb, serial, bluetooth - and ip network
 
 ## Free-DAP
 
-The debugger includes Free-DAP, a CMSIS-DAP probe. Free-DAP only supports SWD, not JTAG.
+The debugger includes [Free-DAP](https://github.com/ataradov/free-dap), a CMSIS-DAP probe. Free-DAP only supports SWD, not JTAG.
 
 ### Setup
 
