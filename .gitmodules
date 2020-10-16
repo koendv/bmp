@@ -7,3 +7,6 @@
 [submodule "extmod/blackmagic"]
 	path = extmod/blackmagic
 	url = http://github.com/koendv/blackmagic
+[submodule "extmod/ulab"]
+	path = extmod/ulab
+	url = http://github.com/koendv/micropython-ulab
