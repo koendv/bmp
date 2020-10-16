@@ -7,6 +7,7 @@ ZIP=/tmp/bmp.zip
 BMPDIR=~/src/bmp
 BRANCH=devel
 #BRANCH=release_1.0
+ULAB_NEEDED=false
 
 cd $BMPDIR
 git submodule update --init --depth 1
@@ -28,6 +29,14 @@ fi
 
 cd $BMPDIR/micropython
 make -j4 -C mpy-cross
+
+# if ulab needed
+if [ $ULAB_NEEDED && ! -d $BMPDIR/micropython/extmod/ulab ]; then
+  cd $BMPDIR/micropython/extmod/
+  git clone https://github.com/v923z/micropython-ulab.git
+  mv micropython-ulab/code .
+  mv code ulab
+fi
 
 cat > readme.txt <<EOD
 stm32:
