@@ -5,9 +5,10 @@ This is firmware and sources for a debugger probe that targets arm processors. T
 -   wifi, usb, serial
 -   built-in gdb server, to debug using gdb 
 -   built-in cmsis-dap probe, to debug using [openocd](http://openocd.org/) and [pyocd](https://github.com/pyocd/pyOCD)
--   built-in micropython with extensions: 
+-   built-in micropython with extensions to: 
     -   read and write target ram, flash and registers
     -   set and clear target breakpoints and watchpoints
+    -   start and stop target
 
 ## Download
 
@@ -308,7 +309,7 @@ True
 b'\x00\x1aGeneric CMSIS-DAP Adapter'
 ```
 
-Use `dap.process()` to port pyOCD scripts from PC to the probe itself.
+Use `dap.process()` to port pyOCD scripts from PC to the probe itself. `dap.process()` itself does not use usb, and can be used even if micropython is not configured as usb hid device, eg. in `pyb.usb_mode('VCP+VCP')`
 
 ### Pins
 
