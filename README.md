@@ -10,44 +10,21 @@ This is firmware and sources for a debugger probe that targets arm processors. T
     -   set and clear target breakpoints and watchpoints
     -   start and stop target
 
-## Download
+## Intro
 
-[Precompiled binaries](https://github.com/koendv/bmp/releases) for ST-Link V3 mini, PYBD_SF2, DEVEBOX_STM32H743, DEVEBOX_STM32H750, and ESP32-WROVER.
+There are three micropython modules that can be used to debug a target: `bmp`, `target` and `dap`.
 
-## Flashing firmware
+- The Black Magic Probe `bmp` micropython module implements a gdb server on a usb vcp, a serial port, or a tcp socket. After `bmp.init()`, you can connect to the probe using gdb.
 
-These are generic instructions for downloading firmware to an stm32 or esp32 board.
-If the board has specific download instructions, follow those instructions instead.
+- The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives access to the primitives `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
 
-### stm32
+- The `dap` micropython module implements a CMSIS-DAP probe on a usb hid port. After `dap.init()`, you can connect to the probe using openocd or pyOCD.
 
-#### Install
+- `dap.process()` is a micropython function that executes a single dap request. `dap.process()` can be used after `dap.init()`, or standalone, without previous `dap.init()`. With `dap.process()` you can port pyOCD scripts from PC to probe.
 
-If the board has a *boot0* button, keep the *boot0* button pressed during board reset or power up to enter dfu mode. If the board has a *boot0* pin, connect the *boot0* pin high (3.3V), and power up or reset the board to enter dfu mode. 
-
-Once the board is in dfu mode, download bootloader and application firmware with `dfu-util`. For example, if the board is a *DEVEBOX_STM32H743*, bootloader firmware will be in directory mboot/build-DEVEBOX_STM32H743, and application firmware will be in directory build-DEVEBOX_STM32H743:
-
-    dfu-util -a 0 -d 0x0483:0xDF11 -D mboot/build-DEVEBOX_STM32H743/firmware.dfu
-    dfu-util -a 0 -d 0x0483:0xDF11 -D build-DEVEBOX_STM32H743/firmware.dfu
-
-Alternatively, connect a debugger to the SWD port and download the firmware that way. If the debugger fails to connect, configure *assert SRST during attach*.
-
-#### Upgrade
-
-If the board already runs micropython, enter dfu mode by typing at the micropython prompt:
-
-    >>> machine.bootloader()
-
-and download the application firmware using `dfu-util`. You can only upgrade the application this way, not the bootloader.
-
-### esp32
-
-Install [esptool](https://github.com/espressif/esptool) and download over usb:
-
-    esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z --flash_mode dio --flash_freq 40m 0x1000 build-ESP32_WROVER/firmware.bin
+The modules `bmp` and `target` can be used at the same time. The modules `dap` and `bmp` should not be active at the same time. 
 
 ## Usage
-
 This section explains how to use the gdb server, the CMSIS-DAP probe, and the micropython extension modules.
 
 ## Black Magic Probe
@@ -322,19 +299,7 @@ If needed, `machine.Pin` allows bit-banging SWD and JTAG pins from micropython, 
 
 SWDIO and SWCLK can be accessed the same way.
 
-### Summary
-
-There are three modules that can be used to debug a target: `bmp`, `target` and `dap`.
-
-- The `bmp` micropython module implements a gdb server on a usb vcp, a serial port, or a tcp socket. After `bmp.init()`, you can connect to the probe using gdb.
-
-- The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives access to the primitives `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
-
-    The modules `bmp` and `target` can be used at the same time. 
-
-- The `dap` micropython module implements a CMSIS-DAP probe on a usb hid port. After `dap.init()`, you can connect to the probe using openocd or pyOCD.
-
-- `dap.process()` is a micropython function that executes a single dap request. `dap.process()` can be used after a `dap.init()`, or standalone, without previous `dap.init()`. With `dap.process()` you can port pyOCD scripts from PC to probe.
+### Caution
 
 Avoid dap and bmp accessing the SWD pins at the same time.
 
@@ -497,8 +462,10 @@ Subjective opinion:
 -   xtensa architecture, not arm
 -   wifi and bluetooth built-in
 -   runs micropython on top of FreeRTOS
--   8 Mbyte PSRAM on the board, but micropython is limited to 4 Mbyte.
 -   No native usb. The usb connection is a usb-serial converter, connected to processor uart0.
+-   abundant memory and flash (8 Mbyte PSRAM, 4 Mbyte flash)
+-   bit-banging gpio pins *slow*
+-   for projects where price is more important than performance
 -   [Porting notes](https://github.com/koendv/micropython/tree/devel/ports/esp32/boards/ESP32_WROVER)
 
 ## Test results
@@ -538,6 +505,42 @@ Test notes:
         machine.freq(216000000)
         dap.calibrate()
         
--    [firmware image](tools/SemihostingTest_stm32f103.elf) used
+-    [firmware image](tools/SemihostingTest_stm32f103.elf) used in test
+
+## Download
+
+[Precompiled binaries](https://github.com/koendv/bmp/releases) for ST-Link V3 mini, PYBD_SF2, DEVEBOX_STM32H743, DEVEBOX_STM32H750, and ESP32-WROVER.
+
+## Flashing firmware
+
+These are generic instructions for downloading firmware to an stm32 or esp32 board.
+If the board has specific download instructions, follow those instructions instead.
+
+### stm32
+
+#### Install
+
+If the board has a *boot0* button, keep the *boot0* button pressed during board reset or power up to enter dfu mode. If the board has a *boot0* pin, connect the *boot0* pin high (3.3V), and power up or reset the board to enter dfu mode. 
+
+Once the board is in dfu mode, download bootloader and application firmware with `dfu-util`. For example, if the board is a *DEVEBOX_STM32H743*, bootloader firmware will be in directory mboot/build-DEVEBOX_STM32H743, and application firmware will be in directory build-DEVEBOX_STM32H743:
+
+    dfu-util -a 0 -d 0x0483:0xDF11 -D mboot/build-DEVEBOX_STM32H743/firmware.dfu
+    dfu-util -a 0 -d 0x0483:0xDF11 -D build-DEVEBOX_STM32H743/firmware.dfu
+
+Alternatively, connect a debugger to the SWD port and download the firmware that way. If the debugger fails to connect, configure *assert SRST during attach*.
+
+#### Upgrade
+
+If the board already runs micropython, enter dfu mode by typing at the micropython prompt:
+
+    >>> machine.bootloader()
+
+and download the application firmware using `dfu-util`. You can only upgrade the application this way, not the bootloader.
+
+### esp32
+
+Install [esptool](https://github.com/espressif/esptool) and download over usb:
+
+    esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z --flash_mode dio --flash_freq 40m 0x1000 build-ESP32_WROVER/firmware.bin
 
 *not truncated*
