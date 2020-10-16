@@ -14,7 +14,7 @@ This is firmware and sources for a debugger probe that targets arm processors. T
 
 There are three micropython modules that can be used to debug: `bmp`, `target` and `dap`.
 
-- The Black Magic Probe `bmp` micropython module implements a gdb server on a usb vcp, a serial port, or a tcp socket. After `bmp.init()`, you can connect to the probe using gdb.
+- The `bmp` "Black Magic Probe" micropython module implements a gdb server on a usb vcp, a serial port, or a tcp socket. After `bmp.init()`, you can connect to the probe using gdb.
 
 - The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives micropython scripts access to the primitives `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
 
