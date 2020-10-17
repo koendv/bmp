@@ -286,7 +286,7 @@ True
 b'\x00\x1aGeneric CMSIS-DAP Adapter'
 ```
 
-Use `dap.process()` to port pyOCD scripts from PC to the probe itself. `dap.process()` itself does not use usb, and can be used even if micropython is not configured as usb hid device, eg. in `pyb.usb_mode('VCP+VCP')`
+Use `dap.process()` to [port pyOCD](https://github.com/koendv/free-dap/tree/devel/python)  scripts from PC to the probe itself. `dap.process()` itself does not use usb, and can be used even if micropython is not configured as usb hid device, eg. in `pyb.usb_mode('VCP+VCP')`
 
 ### Pins
 
@@ -406,7 +406,7 @@ Connect a debugger to the debugger. At the micropython prompt of the debugger th
 
     >>> pyb.fault_debug(1)
 
-and next time the error occurs, instead of a reboot you will get a breakpoint. See patch to *HardFault_Handler* in `stm32_it.c`.
+and next time the error occurs, instead of a reboot you will get a breakpoint. See *bkpt* in *HardFault_Handler()* in `stm32_it.c`.
 
 ## Boards
 
