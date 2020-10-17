@@ -216,6 +216,22 @@ To switch SWO tracing off:
 
     bmp.tracebuf(cb=[buf_addr, buf_size, head_addr, tail_addr])
 
+with arguments
+
+buf_addr
+:   is the address of a 32-bit variable in target memory. The variable contains the address of a buffer in target memory.
+
+buf_size
+:   is the length in bytes of the buffer.
+
+head_addr
+:   is the address of a 32-bit variable in target memory. The variable contains the head pointer, a number from 0 to buf_size - 1, included.
+
+tail_addr
+:   is the address of a 32-bit variable in target memory. The variable contains the tail pointer, a number from 0 to buf_size - 1, included.
+
+### Output redirection
+
 By default, the output of `traceswo` and `tracebuf` is sent to the micropython console. If desired, output can be sent to a micropython function instead, e.g.:
 
     def displ_callback(s):
