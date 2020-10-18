@@ -44,7 +44,7 @@ zip ${ZIP} readme.txt
 for BRD in STLINK3MINI PYBD_SF2 PYBD_SF3 PYBD_SF6 DEVEBOX_STM32H743 DEVEBOX_STM32H750
 do
   cd $BMPDIR/micropython/ports/stm32
-  rm -rf ../../extmod/blackmagic ../../extmod/free-dap
+  rm -rf ../../extmod/blackmagic ../../extmod/free-dap ../../ulab
   make USER_C_MODULES=../../../extmod BOARD=${BRD} clean
   make -j4 USER_C_MODULES=../../../extmod BOARD=${BRD}
   make -C mboot BOARD=${BRD} clean
