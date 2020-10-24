@@ -442,7 +442,7 @@ My development environment is a Raspberry Pi 4, 8gb ram, Samsung Portable SSD T5
 
 ## Debugging the debugger
 
-Sometimes micropython hits an error, resets and reboots. It happens.
+Sometimes it's like driving a Ferrari with an ejection seat. When micropython hits an error, it resets and reboots.
 
 Connect a debugger to the debugger. At the micropython prompt of the debugger that reboots, type:
 
