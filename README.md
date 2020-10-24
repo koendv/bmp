@@ -68,6 +68,7 @@ To connect using a serial port, on stm32 put in `boot.py`:
     bmp.init(stream=machine.UART(1,115200))
 
 On esp32, the rx and tx pin numbers need to be specified as well:
+
     bmp.init(stream=machine.UART(1,115200,rx=22,tx=23))
 
 and on the host:
