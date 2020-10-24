@@ -469,7 +469,7 @@ Subjective opinion:
 -   Fast usb
 -   good quality pcb
 -   processor same as [PYBD_SF3](https://store.micropython.org/product/PYBD-SF3-W4F2)
--   After micropython is installed, only 48K flash remains for the internal filesystem. This is small but enough for the configuration files and a few scripts.
+-   After micropython is installed, only 48K flash remains for the internal filesystem. This is enough for boot.py, main.py and maybe a small script, but not much more.
 -   Connectors are 0.05" (1.27mm) pitch, difficult to solder
 -   *boot0* pin is not broken out. This makes installing firmware more difficult. Need to solder 0.05" headers to SWD and reset pins and download firmware with debugger.
 -   a footprint on the bottom of the board for soldering an SPI flash or a micro-sd connector  would be nice
