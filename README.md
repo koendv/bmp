@@ -232,11 +232,37 @@ tail_addr
 
 ### Output redirection
 
-By default, the output of `traceswo` and `tracebuf` is sent to the micropython console. If desired, output can be sent to a micropython function instead, e.g.:
+By default, the output of `traceswo` and `tracebuf` is sent to the micropython console. With `bmp.disp_fun()` output can be sent to a micropython function instead:
 
     def displ_callback(s):
       lcd.write(s)
     bmp.disp_fun(displ_callback)
+
+An example, redirecting `treaceswo` and `tracebuf` output to an oled display: 
+```
+# connect a small 128x64 ssd1306 i2c oled display to
+# devebox stm32h7xx: i2c clk = pb10, i2c dta = pb11
+
+import ssd1306
+
+class oled:
+
+  def init():
+    global _oled
+    oled_i2c=machine.I2C(-1, machine.Pin.board.PB10, machine.Pin.board.PB11)
+    _oled = ssd1306.SSD1306_I2C(128, 32, oled_i2c)
+    _oled.init_display()
+
+  def display(s):
+    global _oled
+    _oled.fill(0)
+    _oled.text(s, 0, 0)
+    _oled.show()
+
+oled.init()
+oled.display('Hello, world')
+bmp.disp_fun(oled.display)
+```
 
 With micropython scripts, the debugger becomes a standalone tool that takes action without the need for a host system. For instance, combining `traceswo` and `disp_fun`, or `tracebuf` and `disp_fun`, you can script the debugger to log `traceswo` or `tracebuf` output to sdcard and reset the target if a certain string occurs. 
 
