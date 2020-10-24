@@ -525,7 +525,7 @@ Test notes:
 
 ## Download
 
-[Precompiled binaries](https://github.com/koendv/bmp/releases) for ST-Link V3 mini, PYBD_SF2, DEVEBOX_STM32H743, DEVEBOX_STM32H750, and ESP32-WROVER.
+[Precompiled binaries](https://github.com/koendv/bmp/releases) for ST-Link V3 mini, PYBD_SF2, DEVEBOX_STM32H743, DEVEBOX_STM32H750, and ESP32-WROVER. Lightly or not tested.
 
 ## Flashing firmware
 
