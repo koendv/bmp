@@ -238,7 +238,7 @@ By default, the output of `traceswo` and `tracebuf` is sent to the micropython c
       lcd.write(s)
     bmp.disp_fun(displ_callback)
 
-An example, redirecting `treaceswo` and `tracebuf` output to an oled display: 
+An example, redirecting `traceswo` and `tracebuf` output to an oled display: 
 ```
 # connect a small 128x64 ssd1306 i2c oled display to
 # devebox stm32h7xx: i2c clk = pb10, i2c dta = pb11
