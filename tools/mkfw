@@ -37,7 +37,9 @@ esp32:
 esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z --flash_mode dio --flash_freq 40m 0x1000 build-ESP32_WROVER/firmware.bin
 
 EOD
+arm-none-eabi-gcc --version >> readme.txt
 date >> readme.txt
+
 rm -f ${ZIP}
 zip ${ZIP} readme.txt
 
