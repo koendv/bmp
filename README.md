@@ -1,6 +1,6 @@
 # bmp
 
-This is firmware and sources for a debugger probe that targets arm processors. The debugger probe has
+This is firmware and sources for a debugger probe that targets arm processors and is scriptable in python. The debugger probe has
 
 -   wifi, usb, serial
 -   built-in gdb server, to debug using gdb 
@@ -16,7 +16,7 @@ There are three micropython modules that can be used to debug: `bmp`, `target` a
 
 - The `bmp` "Black Magic Probe" micropython module implements a gdb server on a usb vcp, a serial port, or a tcp socket. After `bmp.init()`, you can connect to the probe using gdb.
 
-- The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives micropython scripts access to the primitives `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
+- The `target` micropython module is a collection of micropython functions to manipulate a target: to read and write ram, flash or registers, to set and clear breakpoints, to start and stop the target processor. The module `target` gives micropython scripts access to the primitives black magic probe `bmp` uses to implement the gdb server. Using the module `target` requires a previous `bmp.init()`.
 
 - The `dap` micropython module implements a CMSIS-DAP probe on a usb hid port. After `dap.init()`, you can connect to the probe using [openocd](http://openocd.org/) or [pyocd](https://github.com/pyocd/pyOCD).
 
@@ -63,11 +63,11 @@ and begin debugging.
 
 ### serial
 
-To connect using a serial port, on stm32 put in `boot.py`:
+On debuggers with an stm32 processor, to connect using a serial port, put in `boot.py`:
 
     bmp.init(stream=machine.UART(1,115200))
 
-On esp32, the rx and tx pin numbers need to be specified as well:
+On debuggers with an esp32-wrover processor, the rx and tx pin numbers need to be specified as well:
 
     bmp.init(stream=machine.UART(1,115200,rx=22,tx=23))
 
